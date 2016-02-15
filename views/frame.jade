@@ -1,0 +1,13 @@
+extends layout
+
+block head
+  script(src='//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js')
+
+block content
+  div.frame
+    div.img-wrap
+        img(src='#{imgurl}')
+    div.siteurl
+        a(href='#{siteurl}', target='_blank') #{siteurl}
+  
+  input(type='hidden', value='#{imgurl}')

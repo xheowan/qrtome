@@ -1,11 +1,20 @@
 {
-  "name": "openshift-cartridge-nodejs",
-  "version": "1.0.0",
-  "description": "Custom Node.js cartridge for OpenShift - sample application",
-  "main": "start.js",
+  "name": "qrto.me",
+  "version": "1.2.0",
+  "description": "qrto.me",
+  "main": "server.js",
   "scripts": {
-    "start": "node --use_strict start.js"
+    "start": "node server.js"
   },
-  "author": "Ionut-Cristian Florescu <ionut.florescu@gmail.com>",
-  "license": "MIT"
+  "author": "Wan",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "errorhandler": "^1.4.3",
+    "express": "^4.13.4",
+    "jade": "^1.11.0",
+    "method-override": "^2.3.5",
+    "morgan": "^1.6.1",
+    "serve-favicon": "^2.3.0"
+  },
+  "devDependencies": {}
 }
