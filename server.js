@@ -13,7 +13,8 @@ const http = require('http')
 
 var app = express();
 
-app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 3000);
+app.set('port', process.env.NODE_PORT || 3000);
+app.set('ip', process.env.NODE_IP || '127.0.0.1');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -54,6 +55,6 @@ app.get('/*', function(req, resp) {
 });
 
 var server = http.createServer(app);
-server.listen(app.get('port'), function(){
+server.listen(app.get('port'), app.get('ip'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
