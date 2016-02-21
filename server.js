@@ -36,9 +36,35 @@ app.get('/', function(req, resp) {
     });
 });
 
+app.get('/capture/:weburl', function(req, resp) {
+    var geturl = req.params.weburl;
+    resp.write('capture:' + geturl);
+    resp.end();
+    // if (geturl != undefined && geturl != '') {
+    //     var phantom = require('phantom');
+    //     //var fs = require('fs');
+        
+    //     phantom.create(function(ph) {
+    //         ph.createPage(function(page) {
+    //             page.open(geturl, function(status) {
+    //                if  (status == 'success') {
+    //                    //var base64 = page.renderBase64('PNG');
+    //                    resp.end('ok');
+    //                } else {
+                       
+    //                }
+    //             });
+    //         });
+    //     });    
+    // } else {
+    //     resp.write('capture:' + geturl);
+    //     resp.end();    
+    // }
+});
+
 app.get('/*', function(req, resp) {
     var geturl = req.originalUrl.substr(1);
-    console.log('geturl:', geturl);
+    console.log('qrcode:', req.originalUrl);
     
     geturl = !geturl.indexOf('http') ? geturl : 'http://' + geturl;
     var onHttps = geturl.indexOf('https') != -1;
