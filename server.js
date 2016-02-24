@@ -1,14 +1,15 @@
 const http = require('http')
-    ,https = require('https')
-    ,express = require('express')
-    ,routes = require('./routes')
+    , https = require('https')
+    , express = require('express')
+    , routes = require('./routes')
     //,user = require('./routes/user')
-    ,path = require('path')
-    ,favicon = require('serve-favicon')
-    ,logger = require('morgan')
-    ,methodOverride = require('method-override')
-    ,bodyParser = require('body-parser')
-    ,errorHandler = require('errorhandler');
+    , path = require('path')
+    , favicon = require('serve-favicon')
+    , logger = require('morgan')
+    , methodOverride = require('method-override')
+    , bodyParser = require('body-parser')
+    , errorHandler = require('errorhandler')
+    , og = require('open-graph');
     
 
 var app = express();
@@ -30,57 +31,87 @@ if ('development' == app.get('env')) {
   app.use(errorHandler());
 }
 
+function checkServerExists(siteurl, callback) {
+    var url = require('url');
+    var options = {
+        method: 'HEAD',
+        host: url.parse(siteurl).host,
+        port: 80,
+        path: url.parse(siteurl).pathname
+    };
+
+    var protocol = url.parse(siteurl).protocol;
+    var httpModule = protocol === 'https:' ? https : http;
+    
+    
+    var client = httpModule.request(options, function (r) {
+        callback(r.statusCode == 200);
+    });
+
+    client.on('error', function () {
+        console.log('on error');
+        callback(false);
+    });
+    
+    client.end();
+}
+
 app.get('/', function(req, resp) {
     resp.sendFile('index.html', {
         root: __dirname + '/public/'
     });
 });
 
-app.get('/capture/:weburl', function(req, resp) {
-    var geturl = req.params.weburl;
-    resp.write('capture:' + geturl);
-    resp.end();
-    // if (geturl != undefined && geturl != '') {
-    //     var phantom = require('phantom');
-    //     //var fs = require('fs');
-        
-    //     phantom.create(function(ph) {
-    //         ph.createPage(function(page) {
-    //             page.open(geturl, function(status) {
-    //                if  (status == 'success') {
-    //                    //var base64 = page.renderBase64('PNG');
-    //                    resp.end('ok');
-    //                } else {
-                       
-    //                }
-    //             });
-    //         });
-    //     });    
-    // } else {
-    //     resp.write('capture:' + geturl);
-    //     resp.end();    
-    // }
+app.get('/api/og', function (req, resp) {
+    resp.header('Access-Control-Allow-Origin', req.hostname);
+    //get og story
+    var url = req.query.url;
+    if (url) {
+        og(url, function (err, meta) {
+            resp.json(meta);
+        });
+    } else {
+        resp.send('');
+    }
 });
 
-app.get('/*', function(req, resp) {
+app.get('/*', function (req, resp) {
     var geturl = req.originalUrl.substr(1);
-    console.log('qrcode:', req.originalUrl);
-    
     geturl = !geturl.indexOf('http') ? geturl : 'http://' + geturl;
     var onHttps = geturl.indexOf('https') != -1;
-    
-    var googleApiUrl = 'http://chart.googleapis.com/chart?cht=qr&chs=200x200&choe=UTF-8&chld=L|0&chl=';
-    var imgurl = googleApiUrl + encodeURIComponent(geturl);
-    
-    resp.render('frame', {
+
+    //console.log('qrcode:', req.originalUrl);
+    //init data;
+    var data = {
         title: 'qrto.me',
-        imgurl: imgurl,
-        siteurl: geturl,
-        onHttps: onHttps
+    };
+
+    data['siteurl'] = geturl;
+    data['onHttps'] = onHttps;
+
+    //check remote server
+    checkServerExists(geturl, function (check) {
+        if (check) {
+            //set qrcode image
+            var googleApiUrl = 'http://chart.googleapis.com/chart?cht=qr&chs=200x200&choe=UTF-8&chld=L|0&chl=';
+            var imgurl = googleApiUrl + encodeURIComponent(geturl);
+            data['imgurl'] = imgurl;
+
+            resp.render('frame', data);
+        } else {
+            resp.render('error', {});
+        }
     });
+
+    
+    
+    
+
+    
 });
 
 var server = http.createServer(app);
 server.listen(app.get('port'), app.get('ip'), function(){
     console.log('Express server listening on port ' + app.get('port'));
 });
+
