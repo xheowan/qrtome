@@ -14,6 +14,7 @@
     "jade": "^1.11.0",
     "method-override": "^2.3.5",
     "morgan": "^1.6.1",
+    "open-graph": "^0.1.5",
     "serve-favicon": "^2.3.0"
   },
   "devDependencies": {}

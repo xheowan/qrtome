@@ -36,7 +36,6 @@ function checkServerExists(siteurl, callback) {
     var options = {
         method: 'HEAD',
         host: url.parse(siteurl).host,
-        port: 80,
         path: url.parse(siteurl).pathname
     };
 
