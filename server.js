@@ -43,13 +43,11 @@ function checkServerExists(siteurl, callback) {
     var protocol = url.parse(siteurl).protocol;
     var httpModule = protocol === 'https:' ? https : http;
     
-    
     var client = httpModule.request(options, function (r) {
         callback(r.statusCode == 200);
     });
 
     client.on('error', function () {
-        console.log('on error');
         callback(false);
     });
     
